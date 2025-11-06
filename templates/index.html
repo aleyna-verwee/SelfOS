@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('lang','fr') }}">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SelfOS — {{ t('title') }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>SelfOS</h1>
+    <h2>{{ t('title') }}</h2>
+
+    <form class="add-form" method="post" action="{{ url_for('add') }}">
+      <label>{{ t('mood') }}</label>
+      <input type="number" name="mood" min="1" max="10" step="0.5" required>
+      <label>{{ t('sleep') }}</label>
+      <input type="number" name="sleep" min="0" max="24" step="0.25" placeholder="7.5">
+      <label>{{ t('note') }}</label>
+      <input type="text" name="note" maxlength="200" placeholder="...">
+      <button type="submit">{{ t('add') }}</button>
+    </form>
+
+    <div class="card"><canvas id="chart"></canvas></div>
+
+    <div class="stats">
+      <div>🌗 {{ t('avg7') }} : <strong>{{ avg7 }}</strong></div>
+      <div>🌙 {{ t('avg30') }} : <strong>{{ avg30 }}</strong></div>
+      <div>☀️ {{ t('avg90') }} : <strong>{{ avg90 }}</strong></div>
+    </div>
+
+    <div class="buttons">
+      <a href="{{ url_for('export_csv') }}">{{ t('export_csv') }}</a>
+      <a href="{{ url_for('export_pdf') }}">{{ t('export_pdf') }}</a>
+      <a href="{{ url_for('delete') }}">{{ t('delete') }}</a>
+      <a href="{{ url_for('logout') }}">{{ t('logout') }}</a>
+    </div>
+
+    <div class="card">
+      <h3>{{ t('assistant') }}</h3>
+      <p>{{ ai }}</p>
+    </div>
+
+    <div class="card history">
+      <h3>{{ t('history') }}</h3>
+      {% if rows %}
+      <ul>
+        {% for r in rows %}
+          <li>{{ r['ts'] }} — {{ t('mood') }} {{ r['mood'] }} — {{ t('sleep') }} {{ r['sleep'] }}h — {{ r['note'] }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}<p>—</p>{% endif %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+  const labels = [{% for r in rows %}'{{ r["ts"][5:16] }}',{% endfor %}];
+  const data   = [{% for r in rows %}{{ r["mood"] }},{% endfor %}];
+  new Chart(document.getElementById('chart'), {
+    type:'line',
+    data:{labels:labels,datasets:[{label:'{{ t("mood") }}',data:data,
+      borderColor:'rgba(162,182,255,0.9)',backgroundColor:'rgba(162,182,255,0.2)',fill:true,tension:.4,pointRadius:3}]},
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:10,ticks:{stepSize:1}}}}
+  });
+  </script>
+</body>
+</html>
+
+

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('lang','fr') }}">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SelfOS — Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="auth">
+  <div class="login-box card">
+    <h1>SelfOS</h1>
+    <form method="post" action="{{ url_for('login') }}" class="add-form">
+      <label>{{ t('language') }}</label>
+      <select name="lang">
+        <option value="fr">Français</option><option value="en">English</option><option value="nl">Nederlands</option>
+        <option value="de">Deutsch</option><option value="es">Español</option>
+        <option value="ko">한국어</option><option value="tr">Türkçe</option><option value="zh">中文</option>
+      </select>
+
+      <label>{{ t('email') }}</label>
+      <input type="email" name="email" required>
+
+      <label>{{ t('password') }}</label>
+      <input type="password" name="password" required>
+
+      <button type="submit">{{ t('connect') }}</button>
+    </form>
+
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    <p style="margin-top:10px"><a class="btn ghost" href="{{ url_for('register') }}">{{ t('no_account') }} {{ t('register') }}</a></p>
+  </div>
+</body>
+</html>
+
+
